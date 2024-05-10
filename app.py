@@ -4,10 +4,10 @@ import random
 import string
 
 class Account:
-    def __init__(self, name, password, balance):
+    def __init__(self, username, password, balance):
         unique_cc = self.__generate_unique_cc()
         self.cc = unique_cc
-        self.name = name
+        self.username = username
         self.password = password
         self.balance = int(balance)
 
@@ -37,7 +37,7 @@ class Account:
             self.balance -= amount
 
     def __str__(self):
-        return f'CC: {self.cc}, name: {self.name}, balance: {self.balance}'
+        return f'CC: {self.cc}, name: {self.username}, balance: {self.balance}'
     
 app = Flask(__name__)
 
@@ -65,7 +65,7 @@ def login():
         data = json.load(file)
         user_in_db = False
         for k,v in data.items():
-            if v['name'] == username and v['password'] == password:
+            if k == username and v['password'] == password:
                 user_in_db = True
                 return redirect(url_for('success_log'))
         if not user_in_db:
@@ -82,15 +82,18 @@ def registration():
     if password != password2:
         print("Passwords don't match")
         return redirect(url_for('failure_reg'))
+    elif username in json.load(open('/Users/susannamau/Dev/BPER/Python/webapp/data.json', 'r')):
+        print("Username already exists")
+        return redirect(url_for('failure_reg'))
     else:
         account = Account(username, password, cifra)
         
-        account_json = {account.cc: {
-            'name': account.name,
+        account_json = {account.username: {
+            'cc': account.cc,
             'password': account.password,
             'balance': account.balance}}
         
-        print('ciao ciao')
+        #print('ciao ciao')
         with open('/Users/susannamau/Dev/BPER/Python/webapp/data.json', 'r') as file:
             data = json.load(file)
         data.update(account_json)
@@ -108,11 +111,34 @@ def failure_reg():
 
 @app.route('/success_log')
 def success_log():
-    return "Login successful!"
+    return "Login successful!" #"redirect(url_for('dashboard'))
 
 @app.route('/failure_log')
 def failure_log():
     return "Login failed!"
 
+"""
+@app.route('/dashboard', methods=['POST'])
+def dashboard():
+    username = request.form.get('username')
+    print(username)
+
+    with open('/Users/susannamau/Dev/BPER/Python/webapp/data.json', 'r') as file:
+        data = json.load(file)
+
+    account = data.get(username)
+        
+    what = request.form.get('what_to_do')
+    if what == 'Deposita':
+        account.deposit(int(request.form.get('amount')))
+        return "Deposit successful"
+    elif what == 'Preleva':
+        account.withdraw(int(request.form.get('amount')))
+        return "Withdrawal successful"
+        """
+    
 if __name__ == '__main__':
     app.run(use_reloader=True)
+
+
+    

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <style>
+        /* Stili CSS per la dashboard */
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .balance {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .transaction-form {
+            margin-bottom: 20px;
+        }
+        .transaction-form input[type="number"] {
+            width: 100px;
+        }
+        .logout-button {
+            float: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dashboard</h1>
+        <div class="balance">
+            Saldo attuale: $1000
+        </div>
+        <h2>Effettua una transazione</h2>
+        <form class="transaction-form" method="POST"></form>
+            <label for="amount">Importo:</label>
+            <input type="number" id="amount" name="amount" step="0.01" required>
+            <input type="submit" name="what_to_do" id="do_prelievo" value="Preleva">
+            <input type="submit" name="what_to_do" id="do_deposito" value="Deposita">
+        </form>
+        <a class="logout-button" href="/login">Logout</a>
+    </div>
+</body>
+</html>
