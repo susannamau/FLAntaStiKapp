@@ -1,15 +1,18 @@
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, redirect, url_for, request, session
 import json
 import random
 import string
 
 class Account:
-    def __init__(self, username, password, balance):
-        unique_cc = self.__generate_unique_cc()
-        self.cc = unique_cc
+    def __init__(self, username, password, balance, cc=None):
+        if cc is None:
+            unique_cc = self.__generate_unique_cc()
+            self.cc = unique_cc
+        else:
+            self.cc = cc
         self.username = username
         self.password = password
-        self.balance = int(balance)
+        self.balance = float(balance)
 
     def __generate_unique_cc(self):
         while True:
@@ -29,15 +32,34 @@ class Account:
             raise ValueError('Amount must be positive')
         else:
             self.balance += amount
+        return self
         
     def withdraw(self, amount):
         if self.balance < amount:
             raise ValueError("You don\'t have enough money")
         else:
             self.balance -= amount
+        return self
 
     def __str__(self):
         return f'CC: {self.cc}, name: {self.username}, balance: {self.balance}'
+    
+    def serialize(self):
+        return {
+            'username': self.username,
+            'password': self.password,  # Consider handling password securely
+            'balance': self.balance,
+            'cc': self.cc
+        }
+
+    @classmethod
+    def deserialize(cls, data):
+        return cls(
+            username=data['username'],
+            password=data['password'],  # Handle password security here
+            balance=data['balance'],
+            cc=data.get('cc')  # Use get() to handle missing cc gracefully
+        )
     
 app = Flask(__name__)
 
@@ -66,8 +88,12 @@ def login():
         user_in_db = False
         for k,v in data.items():
             if k == username and v['password'] == password:
+                user = Account(username, password, v['balance'], v['cc'])
                 user_in_db = True
-                return redirect(url_for('success_log'))
+                session['user'] = user.serialize()
+                print(session['user'])
+                return redirect(url_for('dashboard'))
+                #return redirect(url_for('success_log'))
         if not user_in_db:
             return redirect(url_for('failure_log'))
         
@@ -117,27 +143,31 @@ def success_log():
 def failure_log():
     return "Login failed!"
 
-"""
-@app.route('/dashboard', methods=['POST'])
+
+@app.route('/dashboard', methods=['POST', 'GET'])
 def dashboard():
-    username = request.form.get('username')
-    print(username)
-
-    with open('/Users/susannamau/Dev/BPER/Python/webapp/data.json', 'r') as file:
-        data = json.load(file)
-
-    account = data.get(username)
-        
+    utente = Account.deserialize(session['user'])
+    print(utente)
     what = request.form.get('what_to_do')
+    if request.method == 'GET' or what is None:
+        return render_template("dashboard.html", user=utente)
     if what == 'Deposita':
-        account.deposit(int(request.form.get('amount')))
+        u = utente.deposit(float(request.form.get('amount')))
+        session['user'] = u.serialize()
+        utente = u
+        return render_template("dashboard.html", user=utente)  
+        return redirect(url_for('dashboard'))
         return "Deposit successful"
     elif what == 'Preleva':
-        account.withdraw(int(request.form.get('amount')))
+        u = utente.withdraw(float(request.form.get('amount')))
+        session['user'] = u.serialize()
+        utente = u
+        return render_template("dashboard.html", user=utente)  
+        return redirect(url_for('dashboard'))
         return "Withdrawal successful"
-        """
     
 if __name__ == '__main__':
+    app.secret_key = 'tettedisusi'
     app.run(use_reloader=True)
 
 

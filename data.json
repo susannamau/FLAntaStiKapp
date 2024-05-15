@@ -1,4 +1,1 @@
-{"susi": {"cc": "123", "password": "1234", "balance": 1000},
-"piero": {"cc": "U10ZK0FJWC", "password": "abc", "balance": 10},
-"franco": {"cc": "MSVSMUK39G", "password": "a", "balance": 30},
-"luca": {"cc": "IPNB9XRF27", "password": "ciaociao", "balance": 0}}
+{"susi": {"cc": "123", "password": "1234", "balance": 1000}, "piero": {"cc": "U10ZK0FJWC", "password": "abc", "balance": 10}, "franco": {"cc": "MSVSMUK39G", "password": "a", "balance": 30}, "luca": {"cc": "IPNB9XRF27", "password": "ciaociao", "balance": 0}, "alice": {"cc": "0JU5PDWGX7", "password": "boh", "balance": 500.0}, "enrico": {"cc": "3ZW066Z85R", "password": "susanna", "balance": 1000000.0}}
