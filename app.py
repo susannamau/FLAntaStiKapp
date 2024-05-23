@@ -14,18 +14,17 @@ class Account:
         self.password = password
         self.balance = float(balance)
 
-    def __generate_unique_cc(self):
-        while True:
-            cc = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
-            if not self.__check_cc_exists(cc):
-                return cc
-
     def __check_cc_exists(self, cc):
-        with open('/Users/susannamau/Dev/BPER/Python/webapp/data.json', 'r') as file:
-            data = json.load(file)
-            if cc in data:
-                return True
-            return False
+        try:
+            with open('/Users/susannamau/Dev/BPER/Python/webapp/data.json', 'r') as file:
+                data = json.load(file)
+                if cc in data:
+                    return True
+                return False
+        except FileNotFoundError:
+            print("File not found")
+        except json.JSONDecodeError:
+            print("JSON decode error")
         
     def deposit(self, amount):
         if amount < 0:
