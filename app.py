@@ -31,6 +31,11 @@ class Account:
             raise ValueError('Amount must be positive')
         else:
             self.balance += amount
+            with open('/Users/susannamau/Dev/BPER/Python/webapp/data.json', 'r') as file:
+                data = json.load(file)
+            data[self.username]['balance'] = self.balance
+            with open('/Users/susannamau/Dev/BPER/Python/webapp/data.json', 'w') as file:
+                json.dump(data, file)
         return self
         
     def withdraw(self, amount):
@@ -38,6 +43,11 @@ class Account:
             raise ValueError("You don\'t have enough money")
         else:
             self.balance -= amount
+            with open('/Users/susannamau/Dev/BPER/Python/webapp/data.json', 'r') as file:
+                data = json.load(file)
+            data[self.username]['balance'] = self.balance
+            with open('/Users/susannamau/Dev/BPER/Python/webapp/data.json', 'w') as file:
+                json.dump(data, file)
         return self
 
     def __str__(self):
