@@ -75,6 +75,7 @@ app = Flask(__name__)
 
 UPLOAD_FOLDER = 'Python/webapp/uploaded-files'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+ALLOWED_EXTENSIONS = {'txt', 'csv', 'doc', 'docx'}
 
 @app.route('/')
 def welcome():
@@ -179,6 +180,11 @@ def dashboard():
         utente = u
         return render_template("dashboard.html", user=utente)
     
+
+def allowed_file(filename):
+    if filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS:
+        return True
+
 @app.route('/upload', methods=['POST'])
 def upload_file():
     utente = Account.deserialize(session['user'])
@@ -187,14 +193,17 @@ def upload_file():
 
     file = request.files['file']
     if file.filename == '':
-        return "Nessun file selezionato", 400
+        return "Nome file non valido", 400
 
-    if file:
+    if file and allowed_file(file.filename):
         user_folder = os.path.join(app.config['UPLOAD_FOLDER'], utente.username)
         os.makedirs(user_folder, exist_ok=True)
         file_path = os.path.join(user_folder, file.filename)
         file.save(file_path)
         return "File caricato con successo", 200
+    
+    if allowed_file(file.filename) == False:
+        return "Estensione file non valida", 400
 
 
 if __name__ == '__main__':

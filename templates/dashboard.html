@@ -48,8 +48,8 @@
         <br><br>
 
         <form class="upload-form" method="POST" enctype="multipart/form-data" action="/upload">
-            <label for="file">Carica un file:</label>
-            <input type="file" id="file" name="file" required>
+            <label for="file">Carica un file (txt, csv, doc, docx):</label>
+            <input type="file" id="file" name="file" accept=".txt, .csv, .doc, .docx" required>
             <button type="submit">Upload file</button>
         </form>
 
