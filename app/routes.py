@@ -1,9 +1,13 @@
-from flask import Flask, render_template, redirect, url_for, request, session, flash, Blueprint, send_from_directory
+from flask import Flask, render_template, redirect, url_for, request, session, flash, Blueprint, send_from_directory, jsonify, abort
 import json
 import random
 import string
 import os
 from .models import Account
+from huggingface_hub import InferenceClient
+import pandas as pd
+from docx import Document
+import pypandoc
 
 with open('/Users/susannamau/Dev/BPER/Python/webapp/config.json', 'r') as config_file:
     config = json.load(config_file)
@@ -182,3 +186,52 @@ def download_file(filename):
         print(f"File non trovato: {file_path}")  # Messaggio di debug
 
     return send_from_directory(user_folder, filename)
+
+def get_files_content(user_folder):
+    files_content = []
+    files = os.listdir(user_folder)
+    for file in [f for f in files if os.path.isfile(os.path.join(user_folder, f))]:
+        print("File: ", f"{user_folder}/{file}")
+        ext = file.rsplit('.', 1)[1].lower()
+        if ext == "txt":
+            with open(f'{user_folder}/{file}', 'r') as file:
+                content = file.read()
+        elif ext == "csv":
+            content = list(pd.read_csv(f'{user_folder}/{file}'))
+        elif ext == "docx":
+            doc = Document(f'{user_folder}/{file}')
+            content = ""
+            for paragraph in doc.paragraphs:
+                content += paragraph.text + "\n"
+        elif ext == "doc":
+            content = pypandoc.convert_file(f'{user_folder}/{file}', to="plain")
+        files_content.append(content)
+    return files_content
+
+@main.route('/ask', methods=['POST'])
+def ask_question():
+    utente = Account.deserialize(session['user'])
+    user_folder = os.path.join(config['UPLOAD_FOLDER'], utente.username)
+
+    files_content = get_files_content(user_folder)
+
+    data = request.get_json()
+    question = data.get('question')
+
+    hf_token = "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"
+    hf_client = InferenceClient(token=hf_token)
+    llm_model = config["LLM"]
+
+    messages=[
+    {"role": "system", "content": "Sei un assistente che risponde in Italiano alle domande dell'utente consultando i file a disposizione."},
+    {"role": "system", "content": f"Date le seguenti informazioni: {files_content}"},
+    {"role": "user", "content": question}
+    ]
+
+    completion = hf_client.chat_completion(model=llm_model, messages=messages, max_tokens=500)
+    response = completion.choices[0].message.content
+    
+    if response != None:
+        return jsonify({'answer': response})
+    else:
+        return jsonify({'answer': 'There was an error processing your question.'})
