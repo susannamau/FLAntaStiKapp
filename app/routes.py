@@ -139,7 +139,7 @@ def user_dashboard():
     
 
 def allowed_file(filename):
-    if filename.rsplit('.', 1)[1].lower() in main.config["ALLOWED_EXTENSIONS"]:
+    if filename.rsplit('.', 1)[1].lower() in config["ALLOWED_EXTENSIONS"]:
         return True
 
 @main.route('/upload', methods=['POST'])
@@ -153,7 +153,7 @@ def upload_file():
         return "Nome file non valido", 400
 
     if file and allowed_file(file.filename):
-        user_folder = os.path.join(main.config['UPLOAD_FOLDER'], utente.username)
+        user_folder = os.path.join(config['UPLOAD_FOLDER'], utente.username)
         os.makedirs(user_folder, exist_ok=True)
         file_path = os.path.join(user_folder, file.filename)
         file.save(file_path)
