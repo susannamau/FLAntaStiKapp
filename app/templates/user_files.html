@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>List of your uploaded files</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .file-list {
+            list-style-type: disc;  /* Pallini per la lista */
+            padding-left: 20px;     /* Spazio a sinistra per i pallini */
+            margin: 0;
+        }
+        .file-list li {
+            margin: 5px 0;
+            padding: 10px;
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>List of your uploaded files</h1>
+        <ul class="file-list">
+            {% for file in files %}
+                <li><a href="{{ url_for('main.download_file', filename=file) }}" download>{{ file }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

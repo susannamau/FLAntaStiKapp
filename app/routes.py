@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, session, flash, Blueprint
+from flask import Flask, render_template, redirect, url_for, request, session, flash, Blueprint, send_from_directory
 import json
 import random
 import string
@@ -55,7 +55,7 @@ def login():
                 user_in_db = True
                 session['user'] = user.serialize()
                 print(session['user'])
-                return redirect(url_for('main.dashboard'))
+                return redirect(url_for('main.user_dashboard'))
                 #return redirect(url_for('main.success_log'))
         if not user_in_db:
             return redirect(url_for('main.failure_log'))
@@ -100,7 +100,7 @@ def failure_reg():
 
 @main.route('/success_log')
 def success_log():
-    return "Login successful!" #"redirect(url_for('main.dashboard'))
+    return "Login successful!" #"redirect(url_for('main.user_dashboard'))
 
 @main.route('/failure_log')
 def failure_log():
@@ -115,27 +115,27 @@ def logout():
     session.pop('user', None)
     return render_template("login.html")
     
-@main.route('/dashboard', methods=['POST', 'GET'])
-def dashboard():
+@main.route('/user_dashboard', methods=['POST', 'GET'])
+def user_dashboard():
     utente = Account.deserialize(session['user'])
     print(utente)
     what = request.form.get('what_to_do')
     if request.method == 'GET' or what is None:
-        return render_template("dashboard.html", user=utente)
+        return render_template("user_dashboard.html", user=utente)
     if what == 'Deposita':
         u = utente.deposit(float(request.form.get('amount')))
         session['user'] = u.serialize()
         utente = u
-        return render_template("dashboard.html", user=utente)  
+        return render_template("user_dashboard.html", user=utente)  
     elif what == 'Preleva':
         u = utente.withdraw(float(request.form.get('amount')))
         session['user'] = u.serialize()
         utente = u
-        return render_template("dashboard.html", user=utente)
+        return render_template("user_dashboard.html", user=utente)
     
 
 def allowed_file(filename):
-    if filename.rsplit('.', 1)[1].lower() in config.ALLOWED_EXTENSIONS:
+    if filename.rsplit('.', 1)[1].lower() in main.config["ALLOWED_EXTENSIONS"]:
         return True
 
 @main.route('/upload', methods=['POST'])
@@ -157,3 +157,28 @@ def upload_file():
     
     if allowed_file(file.filename) == False:
         return "Estensione file non valida", 400
+    
+@main.route('/user-files', methods=['POST'])
+def user_files():
+    utente = Account.deserialize(session['user'])
+    user_folder = os.path.join(config['UPLOAD_FOLDER'], utente.username)
+    print(user_folder)
+    if not os.path.exists(user_folder):
+        return "Questo utente non ha ancora caricato alcun file."
+
+    files = os.listdir(user_folder)
+    files = [f for f in files if os.path.isfile(os.path.join(user_folder, f))]
+    print(files)
+    return render_template('user_files.html', files=files)
+
+@main.route('/user-files/<filename>', methods=['POST', 'GET'])
+def download_file(filename):
+    utente = Account.deserialize(session['user'])
+    user_folder = os.path.join(config['UPLOAD_FOLDER'], utente.username)
+    file_path = os.path.join(user_folder, filename)
+
+    print(f"Verifica percorso file: {file_path}")  # Messaggio di debug
+    if not os.path.exists(file_path):
+        print(f"File non trovato: {file_path}")  # Messaggio di debug
+
+    return send_from_directory(user_folder, filename)

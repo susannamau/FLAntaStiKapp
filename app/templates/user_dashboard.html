@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dashboard</title>
+    <title>User dashboard</title>
     <style>
         /* Stili CSS per la dashboard */
         body {
@@ -32,7 +32,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Dashboard</h1>
+        <h1>User dashboard</h1>
         <div class="balance">
             Saldo attuale: ${{ user.balance }}
         </div>
@@ -53,6 +53,12 @@
             <!-- <label for="file">Carica un file (txt, csv, doc, docx):</label> -->
             <input type="file" id="file" name="file" accept=".txt, .csv, .doc, .docx" required>
             <button type="submit">Upload file</button>
+        </form>
+
+        <br><br>
+
+        <form class="user-files-form" method="POST" action="/user-files">
+            <button type="submit">Go to your uploaded files</button>
         </form>
 
         <br><br>
