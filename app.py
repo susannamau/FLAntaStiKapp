@@ -76,7 +76,7 @@ app = Flask(__name__)
 def welcome():
     return render_template("home.html")
 
-@app.route('/home', methods=['POST'])
+@app.route('/home', methods=['POST', 'GET'])
 def home():
     #return request.form.get('submit_button')
     if request.form.get('submit_button') == 'Yes, go to login':
@@ -86,7 +86,7 @@ def home():
     else:
         print("Error")
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['POST', 'GET'])
 def login():
     username = request.form.get('username')
     password = request.form.get('password')
@@ -107,7 +107,7 @@ def login():
             return redirect(url_for('failure_log'))
         
         
-@app.route('/registration', methods=['POST'])
+@app.route('/registration', methods=['POST', 'GET'])
 def registration():
     username = request.form.get('username')
     password = request.form.get('pass')
@@ -151,8 +151,7 @@ def success_log():
 @app.route('/failure_log')
 def failure_log():
     return "Login failed!"
-
-
+    
 @app.route('/dashboard', methods=['POST', 'GET'])
 def dashboard():
     utente = Account.deserialize(session['user'])
@@ -165,16 +164,18 @@ def dashboard():
         session['user'] = u.serialize()
         utente = u
         return render_template("dashboard.html", user=utente)  
-        return redirect(url_for('dashboard'))
-        return "Deposit successful"
     elif what == 'Preleva':
         u = utente.withdraw(float(request.form.get('amount')))
         session['user'] = u.serialize()
         utente = u
-        return render_template("dashboard.html", user=utente)  
-        return redirect(url_for('dashboard'))
-        return "Withdrawal successful"
+        return render_template("dashboard.html", user=utente)
     
+@app.route('/logout', methods=['POST', 'GET'])
+def logout():
+    session.pop('user', None)
+    return render_template("login.html")
+
+
 if __name__ == '__main__':
     app.secret_key = 'tettedisusi'
     app.run(use_reloader=True)

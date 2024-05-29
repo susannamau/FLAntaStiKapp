@@ -12,6 +12,11 @@
             margin: 0 auto;
             padding: 20px;
         }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
         .balance {
             font-size: 24px;
             font-weight: bold;
@@ -22,9 +27,6 @@
         }
         .transaction-form input[type="number"] {
             width: 100px;
-        }
-        .logout-button {
-            float: right;
         }
     </style>
 </head>
@@ -42,7 +44,11 @@
             <input type="submit" name="what_to_do" id="do_prelievo" value="Preleva">
             <input type="submit" name="what_to_do" id="do_deposito" value="Deposita">
         </form>
-        <a class="logout-button" href="/login">Logout</a>
+
+        <form class="logout-form" method="POST" action="/logout">
+            <button type="submit">Logout</button>
+        </form>
+
     </div>
 </body>
 </html>
