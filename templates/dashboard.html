@@ -45,6 +45,16 @@
             <input type="submit" name="what_to_do" id="do_deposito" value="Deposita">
         </form>
 
+        <br><br>
+
+        <form class="upload-form" method="POST" enctype="multipart/form-data" action="/upload">
+            <label for="file">Carica un file:</label>
+            <input type="file" id="file" name="file" required>
+            <button type="submit">Upload file</button>
+        </form>
+
+        <br><br>
+
         <form class="logout-form" method="POST" action="/logout">
             <button type="submit">Logout</button>
         </form>

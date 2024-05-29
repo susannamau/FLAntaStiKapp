@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, url_for, request, session
 import json
 import random
 import string
+import os
 
 class Account:
     def __init__(self, username, password, balance, cc=None):
@@ -71,6 +72,9 @@ class Account:
         )
     
 app = Flask(__name__)
+
+UPLOAD_FOLDER = 'Python/webapp/uploaded-files'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/')
 def welcome():
@@ -151,6 +155,11 @@ def success_log():
 @app.route('/failure_log')
 def failure_log():
     return "Login failed!"
+
+@app.route('/logout', methods=['POST', 'GET'])
+def logout():
+    session.pop('user', None)
+    return render_template("login.html")
     
 @app.route('/dashboard', methods=['POST', 'GET'])
 def dashboard():
@@ -170,15 +179,24 @@ def dashboard():
         utente = u
         return render_template("dashboard.html", user=utente)
     
-@app.route('/logout', methods=['POST', 'GET'])
-def logout():
-    session.pop('user', None)
-    return render_template("login.html")
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    utente = Account.deserialize(session['user'])
+    if 'file' not in request.files:
+        return "Nessun file selezionato", 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return "Nessun file selezionato", 400
+
+    if file:
+        user_folder = os.path.join(app.config['UPLOAD_FOLDER'], utente.username)
+        os.makedirs(user_folder, exist_ok=True)
+        file_path = os.path.join(user_folder, file.filename)
+        file.save(file_path)
+        return "File caricato con successo", 200
 
 
 if __name__ == '__main__':
     app.secret_key = 'tettedisusi'
     app.run(use_reloader=True)
-
-
-    
