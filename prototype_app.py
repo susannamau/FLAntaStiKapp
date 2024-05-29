@@ -17,7 +17,7 @@ class Account:
 
     def __check_cc_exists(self, cc):
         try:
-            with open('/Users/susannamau/Dev/BPER/Python/webapp/data.json', 'r') as file:
+            with open('/Users/susannamau/Dev/BPER/Python/webapp/data/user_data.json', 'r') as file:
                 data = json.load(file)
                 if cc in data:
                     return True
@@ -32,10 +32,10 @@ class Account:
             raise ValueError('Amount must be positive')
         else:
             self.balance += amount
-            with open('/Users/susannamau/Dev/BPER/Python/webapp/data.json', 'r') as file:
+            with open('/Users/susannamau/Dev/BPER/Python/webapp/data/user_data.json', 'r') as file:
                 data = json.load(file)
             data[self.username]['balance'] = self.balance
-            with open('/Users/susannamau/Dev/BPER/Python/webapp/data.json', 'w') as file:
+            with open('/Users/susannamau/Dev/BPER/Python/webapp/data/user_data.json', 'w') as file:
                 json.dump(data, file)
         return self
         
@@ -44,10 +44,10 @@ class Account:
             raise ValueError("You don\'t have enough money")
         else:
             self.balance -= amount
-            with open('/Users/susannamau/Dev/BPER/Python/webapp/data.json', 'r') as file:
+            with open('/Users/susannamau/Dev/BPER/Python/webapp/data/user_data.json', 'r') as file:
                 data = json.load(file)
             data[self.username]['balance'] = self.balance
-            with open('/Users/susannamau/Dev/BPER/Python/webapp/data.json', 'w') as file:
+            with open('/Users/susannamau/Dev/BPER/Python/webapp/data/user_data.json', 'w') as file:
                 json.dump(data, file)
         return self
 
@@ -79,10 +79,20 @@ ALLOWED_EXTENSIONS = {'txt', 'csv', 'doc', 'docx'}
 
 @app.route('/')
 def welcome():
-    return render_template("home.html")
+    return render_template("user_type.html")
 
-@app.route('/home', methods=['POST', 'GET'])
-def home():
+@app.route('/user_type', methods=['POST', 'GET'])
+def user_type():
+    if request.form.get('submit_button') == 'Utente':
+        return render_template("account_exists.html")
+    elif request.form.get('submit_button') == 'Amministratore':
+        return render_template("login.html")
+    else:
+        print("Error")
+    
+
+@app.route('/account_exists', methods=['POST', 'GET'])
+def account_exists():
     #return request.form.get('submit_button')
     if request.form.get('submit_button') == 'Yes, go to login':
         return render_template("login.html")
@@ -96,8 +106,14 @@ def login():
     username = request.form.get('username')
     password = request.form.get('password')
     #return f"{username} {password}"
+
+    with open('/Users/susannamau/Dev/BPER/Python/webapp/data/administrator_data.json', 'r') as file:
+        data = json.load(file)
+        for k,v in data.items():
+            if k == username and v['password'] == password:
+                return redirect(url_for('admin_dashboard'))
     
-    with open('/Users/susannamau/Dev/BPER/Python/webapp/data.json', 'r') as file:
+    with open('/Users/susannamau/Dev/BPER/Python/webapp/data/user_data.json', 'r') as file:
         data = json.load(file)
         user_in_db = False
         for k,v in data.items():
@@ -122,7 +138,7 @@ def registration():
     if password != password2:
         print("Passwords don't match")
         return redirect(url_for('failure_reg'))
-    elif username in json.load(open('/Users/susannamau/Dev/BPER/Python/webapp/data.json', 'r')):
+    elif username in json.load(open('/Users/susannamau/Dev/BPER/Python/webapp/data/user_data.json', 'r')):
         print("Username already exists")
         return redirect(url_for('failure_reg'))
     else:
@@ -134,10 +150,10 @@ def registration():
             'balance': account.balance}}
         
         #print('ciao ciao')
-        with open('/Users/susannamau/Dev/BPER/Python/webapp/data.json', 'r') as file:
+        with open('/Users/susannamau/Dev/BPER/Python/webapp/data/user_data.json', 'r') as file:
             data = json.load(file)
         data.update(account_json)
-        with open('/Users/susannamau/Dev/BPER/Python/webapp/data.json', 'w') as file:
+        with open('/Users/susannamau/Dev/BPER/Python/webapp/data/user_data.json', 'w') as file:
             json.dump(data, file)
         return redirect(url_for('success_reg'))
 
@@ -156,6 +172,10 @@ def success_log():
 @app.route('/failure_log')
 def failure_log():
     return "Login failed!"
+
+@app.route('/admin_dashboard')
+def admin_dashboard():
+    return "This is the admin dashboard."
 
 @app.route('/logout', methods=['POST', 'GET'])
 def logout():
