@@ -22,6 +22,21 @@
             background-color: #f4f4f4;
             border: 1px solid #ddd;
             border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .file-list li a {
+            flex-grow: 1;
+            margin-right: 20px;
+        }
+        .delete-button {
+            padding: 5px 10px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
         }
         .question-form {
             margin-top: 20px;
@@ -50,10 +65,13 @@
 </head>
 <body>
     <div class="container">
-        <h1>List of your uploaded files</h1>
+        <h1>Your uploaded files</h1>
         <ul class="file-list">
             {% for file in files %}
-                <li><a href="{{ url_for('main.download_file', filename=file) }}" download>{{ file }}</a></li>
+                <li>
+                    <a href="{{ url_for('main.download_file', filename=file) }}" download>{{ file }}</a>
+                    <button class="delete-button" onclick="deleteFile('{{ file }}')">Delete file</button>
+                </li>
             {% endfor %}
         </ul>
         <div class="question-form">
@@ -67,6 +85,27 @@
     </div>
 
     <script>
+        function deleteFile(filename) {
+            fetch('{{ url_for("main.delete_file") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ filename: filename }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Failed to delete file.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
         document.getElementById('questionForm').addEventListener('submit', function(event) {
             event.preventDefault();
             const question = document.getElementById('question').value;

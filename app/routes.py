@@ -208,6 +208,19 @@ def get_files_content(user_folder):
         files_content.append(content)
     return files_content
 
+@main.route('/delete_file', methods=['POST'])
+def delete_file():
+    utente = Account.deserialize(session['user'])
+    user_folder = os.path.join(config['UPLOAD_FOLDER'], utente.username)
+
+    data = request.get_json()
+    filename = data['filename']
+    file_path = os.path.join(user_folder, filename)
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        return jsonify(success=True)
+    return jsonify(success=False)
+
 @main.route('/ask', methods=['POST'])
 def ask_question():
     utente = Account.deserialize(session['user'])
