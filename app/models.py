@@ -15,6 +15,12 @@ class Account:
         self.password = password
         self.balance = float(balance)
 
+    def __generate_unique_cc(self):
+        while True:
+            cc = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+            if not self.__check_cc_exists(cc):
+                return cc
+
     def __check_cc_exists(self, cc):
         try:
             with open('/Users/susannamau/Dev/BPER/Python/webapp/app/data/user_data.json', 'r') as file:

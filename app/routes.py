@@ -112,7 +112,21 @@ def failure_log():
 
 @main.route('/admin_dashboard')
 def admin_dashboard():
-    return "This is the admin dashboard."
+    return render_template('admin_dashboard.html')
+
+@main.route('/get_client_data')
+def get_client_data():    
+    with open('/Users/susannamau/Dev/BPER/Python/webapp/app/data/user_data.json') as f:
+        client_data = json.load(f)
+
+    balances = []
+    for el in client_data.values():
+        balances.append(el['balance'])
+    #print(balances)
+    total_clients = len(client_data)
+    #print(total_clients)
+    
+    return jsonify(balances=balances, total_clients=total_clients)
 
 @main.route('/logout', methods=['POST', 'GET'])
 def logout():
