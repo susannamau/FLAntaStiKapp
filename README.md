@@ -24,7 +24,7 @@ To run this application, you will need Python and Flask. The application uses JS
 
 ## Installation
 
-Clone the repository to your local machine and navigate to the app directory. When running `run.py`, by default the application will we available at `http://127.0.0.1:5000/`.
+Clone the repository to your local machine and navigate to the app directory. Install the libraries in `requirements.txt`. When running `run.py`, by default the application will we available at `http://127.0.0.1:5000/`.
 
 ## Structure of My FLAntaStiKapp
 
