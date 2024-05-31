@@ -1,4 +1,4 @@
-# My FLAntaStiKapp
+# My FLAntaStiKapp 🐍
 
 This is a simple banking web application built with Flask. The application allows users to register, log in, and perform basic account management tasks such as depositing and withdrawing money.
 
