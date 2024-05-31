@@ -5,16 +5,26 @@ This is a simple banking web application built with Flask. The application allow
 ## Features implemented so far
 
 - User registration and login
+- Admin login
 - Unique account number generation for new accounts
 - Account balance management
+- Data storing
+- Chance for the user to:
+  - Deposit and withdraw money
+  - Upload textual files
+  - Query of a LLM (currently LLaMa3 (8B), HuggingFace) that considers the content of the textual files previously uploaded
+  - Download and delete uploaded files
+- Chance for the admin to:
+  - See the number of registered users
+  - See the distribution of the balances of the users
 
 ## Requirements
 
-To run this application, you will need Python and Flask. The application uses JSON to store user data persistently.
+To run this application, you will need Python and Flask. The application uses JSON to store user data persistently. Also, an HuggingFace key is needed to query the LLM.
 
 ## Installation
 
-Clone the repository to your local machine and navigate to the app directory. When running `app.py`, by default the application will we available at `http://127.0.0.1:5000/`.
+Clone the repository to your local machine and navigate to the app directory. When running `run.py`, by default the application will we available at `http://127.0.0.1:5000/`.
 
 ## Structure of My FLAntaStiKapp
 
