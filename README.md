@@ -15,3 +15,27 @@ To run this application, you will need Python and Flask. The application uses JS
 ## Installation
 
 Clone the repository to your local machine and navigate to the app directory. When running `app.py`, by default the application will we available at `http://127.0.0.1:5000/`.
+
+## Structure of My FLAntaStiKapp
+
+```mermaid
+graph TD
+    A[Access and choose authentication role] --> B[User]
+    A --> B2[Administrator]
+
+    B --> C{Do you already have an account?}
+    C -- Yes --> D[Login]
+    C -- No --> E[Register]
+    D --> F[User dashboard]
+    E --> D
+
+    F --> G[Manage files]
+    G --> H[Upload file]
+    G --> I[Download file]
+    G --> J[Delete file]
+    G --> K[Query files via LLM]
+
+    B2 --> L[Login]
+    L --> M[Admin dashboard with graphs and queries]
+    M --> N[Query all users' files via LLM]
+    M --> O[Query individual user files via LLM]
