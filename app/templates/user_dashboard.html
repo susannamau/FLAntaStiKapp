@@ -32,11 +32,12 @@
 </head>
 <body>
     <div class="container">
+
         <h1>User dashboard</h1>
         <div class="balance">
             Saldo attuale: ${{ user.balance }}
         </div>
-        </div>
+
         <h2>Effettua una transazione</h2>
         <form class="transaction-form" method="POST">
             <label for="amount">Importo:</label>
@@ -48,7 +49,7 @@
         <br>
 
         <h2>Carica un file</h2>
-        <p>Vengono accetati solo file di tipo txt, csv, doc, docx</p>
+        <p>Vengono accettati solo file di tipo txt, csv, doc, docx</p>
         <form class="upload-form" method="POST" enctype="multipart/form-data" action="/upload">
             <!-- <label for="file">Carica un file (txt, csv, doc, docx):</label> -->
             <input type="file" id="file" name="file" accept=".txt, .csv, .doc, .docx" required>
